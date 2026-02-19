@@ -80,6 +80,12 @@ const Login = () => {
                 </div>
               </div>
 
+              <div className="flex justify-end">
+                <Link to="/forgot-password" className="text-xs text-primary hover:underline">
+                  পাসওয়ার্ড ভুলে গেছেন?
+                </Link>
+              </div>
+
               <Button type="submit" className="w-full" size="lg" disabled={loading}>
                 {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                 লগইন
