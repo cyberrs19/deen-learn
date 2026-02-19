@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, BookOpen } from "lucide-react";
+import { Menu, X, BookOpen, LogOut } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
+  const { user, signOut } = useAuth();
 
   const navLinks = [
     { to: "/", label: "হোম" },
@@ -45,12 +47,26 @@ const Header = () => {
         </nav>
 
         <div className="hidden items-center gap-2 md:flex">
-          <Button variant="ghost" asChild>
-            <Link to="/login">লগইন</Link>
-          </Button>
-          <Button asChild>
-            <Link to="/register">রেজিস্টার</Link>
-          </Button>
+          {user ? (
+            <>
+              <span className="text-sm text-muted-foreground">
+                {user.user_metadata?.full_name || user.email}
+              </span>
+              <Button variant="ghost" size="sm" onClick={signOut}>
+                <LogOut className="h-4 w-4 mr-1" />
+                লগআউট
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button variant="ghost" asChild>
+                <Link to="/login">লগইন</Link>
+              </Button>
+              <Button asChild>
+                <Link to="/register">রেজিস্টার</Link>
+              </Button>
+            </>
+          )}
         </div>
 
         {/* Mobile toggle */}
@@ -82,12 +98,21 @@ const Header = () => {
               </Link>
             ))}
             <div className="mt-2 flex flex-col gap-2">
-              <Button variant="ghost" asChild className="justify-start">
-                <Link to="/login" onClick={() => setMobileOpen(false)}>লগইন</Link>
-              </Button>
-              <Button asChild>
-                <Link to="/register" onClick={() => setMobileOpen(false)}>রেজিস্টার</Link>
-              </Button>
+              {user ? (
+                <Button variant="ghost" className="justify-start" onClick={() => { signOut(); setMobileOpen(false); }}>
+                  <LogOut className="h-4 w-4 mr-1" />
+                  লগআউট
+                </Button>
+              ) : (
+                <>
+                  <Button variant="ghost" asChild className="justify-start">
+                    <Link to="/login" onClick={() => setMobileOpen(false)}>লগইন</Link>
+                  </Button>
+                  <Button asChild>
+                    <Link to="/register" onClick={() => setMobileOpen(false)}>রেজিস্টার</Link>
+                  </Button>
+                </>
+              )}
             </div>
           </nav>
         </div>
