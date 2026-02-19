@@ -1,20 +1,27 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import CourseCard from "./CourseCard";
 import { GraduationCap } from "lucide-react";
-import quranShikhiThumbnail from "@/assets/quran-shikhi-thumbnail.jpg";
-
-const MOCK_COURSES = [
-  {
-    title: "সহজ সূত্রে কুরআন শিখি",
-    description: "কুরআন সহজভাবে শিখুন আস-সুন্নাহ ফাউন্ডেশনের এই কোর্সে। ২৭টি লেকচারে কুরআনের মূল বিষয়গুলো জানুন।",
-    instructor: "আস-সুন্নাহ ফাউন্ডেশন",
-    lectureCount: 27,
-    slug: "quran-shikhi",
-    thumbnail: quranShikhiThumbnail,
-  },
-];
+import { supabase } from "@/lib/supabase";
 
 const FeaturedCourses = () => {
+  const [courses, setCourses] = useState<any[]>([]);
+
+  useEffect(() => {
+    const load = async () => {
+      const { data } = await supabase
+        .from('courses')
+        .select('*')
+        .eq('is_published', true)
+        .order('created_at')
+        .limit(4);
+      setCourses(data || []);
+    };
+    load();
+  }, []);
+
+  if (courses.length === 0) return null;
+
   return (
     <section className="py-20">
       <div className="container">
@@ -36,9 +43,17 @@ const FeaturedCourses = () => {
           </p>
         </motion.div>
 
-        <div className="mx-auto max-w-md">
-          {MOCK_COURSES.map((course) => (
-            <CourseCard key={course.slug} {...course} />
+        <div className="mx-auto grid max-w-4xl gap-6 md:grid-cols-2">
+          {courses.map((course) => (
+            <CourseCard
+              key={course.id}
+              title={course.title}
+              description={course.description || ''}
+              instructor={course.instructor || ''}
+              lectureCount={0}
+              slug={course.slug}
+              thumbnail={course.thumbnail_url}
+            />
           ))}
         </div>
       </div>
