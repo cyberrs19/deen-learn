@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useParams } from "react-router-dom";
 import quranShikhiThumbnail from "@/assets/quran-shikhi-thumbnail.jpg";
+import lecture1Thumb from "@/assets/lecture-1.jpg";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -19,7 +20,8 @@ import {
 const MOCK_LECTURES = Array.from({ length: 27 }, (_, i) => ({
   id: i + 1,
   title: `লেকচার ${i + 1}`,
-  duration: "25:00",
+  duration: i === 0 ? "17:19" : "25:00",
+  thumbnail: i === 0 ? lecture1Thumb : undefined,
   isPublic: i < 5,
   isCompleted: false,
   orderNo: i + 1,
@@ -65,11 +67,16 @@ const CourseDetail = () => {
                 className="mb-6 overflow-hidden rounded-xl border border-border bg-card"
               >
                 {activeLecture && activeLecture.isPublic ? (
-                  <div className="aspect-video bg-foreground/5 flex items-center justify-center">
-                    <div className="text-center text-muted-foreground">
-                      <PlayCircle className="mx-auto mb-2 h-16 w-16" />
-                      <p className="text-lg font-medium">{activeLecture.title}</p>
-                      <p className="text-sm">ভিডিও প্লেয়ার (YouTube Embed)</p>
+                  <div className="aspect-video bg-foreground/5 relative">
+                    {activeLecture.thumbnail ? (
+                      <img src={activeLecture.thumbnail} alt={activeLecture.title} className="h-full w-full object-cover" />
+                    ) : null}
+                    <div className={`absolute inset-0 flex items-center justify-center ${activeLecture.thumbnail ? 'bg-foreground/30' : ''}`}>
+                      <div className="text-center text-primary-foreground">
+                        <PlayCircle className="mx-auto mb-2 h-16 w-16" />
+                        <p className="text-lg font-medium">{activeLecture.title}</p>
+                        <p className="text-sm opacity-70">{activeLecture.duration} মিনিট</p>
+                      </div>
                     </div>
                   </div>
                 ) : (
