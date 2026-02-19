@@ -8,13 +8,6 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - db-data:/var/lib/postgresql/data
-      - ./volumes/db/init:/docker-entrypoint-initdb.d
-    entrypoint:
-      - sh
-      - -c
-      - |
-        chmod +x /docker-entrypoint-initdb.d/*.sh 2>/dev/null || true
-        exec docker-entrypoint.sh postgres
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U supabase_admin -d postgres"]
       interval: 5s
@@ -22,11 +15,26 @@ services:
       retries: 10
     restart: unless-stopped
 
-  auth:
-    image: supabase/gotrue:v2.151.0
+  db-init:
+    image: supabase/postgres:15.1.1.78
     depends_on:
       db:
         condition: service_healthy
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+    entrypoint: ["sh", "-c"]
+    command:
+      - |
+        psql -h db -U supabase_admin -d postgres -c "ALTER ROLE supabase_auth_admin WITH PASSWORD '$$PGPASSWORD';"
+        psql -h db -U supabase_admin -d postgres -c "ALTER ROLE authenticator WITH PASSWORD '$$PGPASSWORD';"
+        echo "Roles updated successfully"
+    restart: "no"
+
+  auth:
+    image: supabase/gotrue:v2.151.0
+    depends_on:
+      db-init:
+        condition: service_completed_successfully
     environment:
       GOTRUE_API_HOST: 0.0.0.0
       GOTRUE_API_PORT: 9999
@@ -52,8 +60,8 @@ services:
   rest:
     image: postgrest/postgrest:v12.0.1
     depends_on:
-      db:
-        condition: service_healthy
+      db-init:
+        condition: service_completed_successfully
     environment:
       PGRST_DB_URI: postgres://authenticator:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       PGRST_DB_SCHEMAS: public,storage,graphql_public
