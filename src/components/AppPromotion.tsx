@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { ExternalLink, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import quranlyLogo from "@/assets/quranly-logo.webp";
 
 const AppPromotion = () => {
   return (
@@ -32,8 +33,8 @@ const AppPromotion = () => {
           className="flex justify-center"
         >
           <div className="relative overflow-hidden rounded-2xl border border-border bg-background p-8 shadow-elegant max-w-lg w-full text-center">
-            <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-primary/10">
-              <BookOpenIcon className="h-10 w-10 text-primary" />
+            <div className="mx-auto mb-6 h-20 w-20 overflow-hidden rounded-2xl shadow-md">
+              <img src={quranlyLogo} alt="Quranly App" className="h-full w-full object-cover" />
             </div>
             <h3 className="text-xl font-bold text-foreground mb-2">Quranly App</h3>
             <p className="text-muted-foreground mb-6 text-sm leading-relaxed">
