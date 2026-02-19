@@ -9,10 +9,11 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U supabase_admin -d postgres"]
+      test: ["CMD-SHELL", "psql -U supabase_admin -d postgres -c 'SELECT 1' >/dev/null 2>&1"]
       interval: 5s
       timeout: 5s
-      retries: 10
+      retries: 20
+      start_period: 15s
     restart: unless-stopped
 
   db-init:
@@ -25,9 +26,20 @@ services:
     entrypoint: ["sh", "-c"]
     command:
       - |
-        psql -h db -U supabase_admin -d postgres -c "ALTER ROLE supabase_auth_admin WITH PASSWORD '$$PGPASSWORD';"
-        psql -h db -U supabase_admin -d postgres -c "ALTER ROLE authenticator WITH PASSWORD '$$PGPASSWORD';"
-        echo "Roles updated successfully"
+        echo "Waiting for DB to be fully ready..."
+        for i in 1 2 3 4 5 6 7 8 9 10; do
+          if psql -h db -U supabase_admin -d postgres -c "SELECT 1" >/dev/null 2>&1; then
+            echo "DB is ready, setting role passwords..."
+            psql -h db -U supabase_admin -d postgres -c "ALTER ROLE supabase_auth_admin WITH PASSWORD '$$PGPASSWORD';"
+            psql -h db -U supabase_admin -d postgres -c "ALTER ROLE authenticator WITH PASSWORD '$$PGPASSWORD';"
+            echo "Roles updated successfully"
+            exit 0
+          fi
+          echo "Attempt $$i: DB not ready yet, waiting 3s..."
+          sleep 3
+        done
+        echo "ERROR: DB never became ready"
+        exit 1
     restart: "no"
 
   auth:
