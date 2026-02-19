@@ -130,7 +130,7 @@ services:
       context: ..
       dockerfile: docker/Dockerfile.frontend
     ports:
-      - "8081:80"
+      - "8098:80"
     depends_on:
       - kong
     restart: unless-stopped
