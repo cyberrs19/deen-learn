@@ -9,6 +9,12 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
       - ./volumes/db/init:/docker-entrypoint-initdb.d
+    entrypoint:
+      - sh
+      - -c
+      - |
+        chmod +x /docker-entrypoint-initdb.d/*.sh 2>/dev/null || true
+        exec docker-entrypoint.sh postgres
     restart: unless-stopped
 
   auth:
