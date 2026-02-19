@@ -15,12 +15,18 @@ services:
       - |
         chmod +x /docker-entrypoint-initdb.d/*.sh 2>/dev/null || true
         exec docker-entrypoint.sh postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U supabase_admin -d postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     restart: unless-stopped
 
   auth:
     image: supabase/gotrue:v2.151.0
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       GOTRUE_API_HOST: 0.0.0.0
       GOTRUE_API_PORT: 9999
@@ -46,7 +52,8 @@ services:
   rest:
     image: postgrest/postgrest:v12.0.1
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       PGRST_DB_URI: postgres://authenticator:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       PGRST_DB_SCHEMAS: public,storage,graphql_public
@@ -87,7 +94,8 @@ services:
   meta:
     image: supabase/postgres-meta:v0.80.0
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       PG_META_PORT: 8080
       PG_META_DB_HOST: db
