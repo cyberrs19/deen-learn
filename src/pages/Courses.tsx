@@ -3,6 +3,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CourseCard from "@/components/CourseCard";
 import { GraduationCap } from "lucide-react";
+import quranShikhiThumbnail from "@/assets/quran-shikhi-thumbnail.jpg";
 
 const COURSES = [
   {
@@ -11,6 +12,7 @@ const COURSES = [
     instructor: "আস-সুন্নাহ ফাউন্ডেশন",
     lectureCount: 27,
     slug: "quran-shikhi",
+    thumbnail: quranShikhiThumbnail,
   },
 ];
 

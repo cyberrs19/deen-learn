@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useParams } from "react-router-dom";
+import quranShikhiThumbnail from "@/assets/quran-shikhi-thumbnail.jpg";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -32,6 +33,7 @@ const CourseDetail = () => {
     title: "সহজ সূত্রে কুরআন শিখি",
     description:
       "কুরআন সহজভাবে শিখুন আস-সুন্নাহ ফাউন্ডেশনের এই কোর্সে। ২৭টি ভিডিও লেকচার এবং পিডিএফ নোটসের মাধ্যমে কুরআনের মূল বিষয়গুলো জানুন।",
+    thumbnail: quranShikhiThumbnail,
     instructor: "আস-সুন্নাহ ফাউন্ডেশন",
     lectureCount: 27,
   };
@@ -71,13 +73,16 @@ const CourseDetail = () => {
                     </div>
                   </div>
                 ) : (
-                  <div className="aspect-video bg-gradient-hero flex items-center justify-center">
-                    <div className="text-center text-primary-foreground">
-                      <PlayCircle className="mx-auto mb-3 h-16 w-16 opacity-60" />
-                      <p className="text-xl font-bold">{course.title}</p>
-                      <p className="mt-2 text-sm opacity-70">
-                        একটি লেকচার নির্বাচন করুন
-                      </p>
+                  <div className="aspect-video relative">
+                    <img src={course.thumbnail} alt={course.title} className="h-full w-full object-cover" />
+                    <div className="absolute inset-0 bg-foreground/40 flex items-center justify-center">
+                      <div className="text-center text-primary-foreground">
+                        <PlayCircle className="mx-auto mb-3 h-16 w-16 opacity-80" />
+                        <p className="text-xl font-bold">{course.title}</p>
+                        <p className="mt-2 text-sm opacity-70">
+                          একটি লেকচার নির্বাচন করুন
+                        </p>
+                      </div>
                     </div>
                   </div>
                 )}

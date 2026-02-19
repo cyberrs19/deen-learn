@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import CourseCard from "./CourseCard";
 import { GraduationCap } from "lucide-react";
+import quranShikhiThumbnail from "@/assets/quran-shikhi-thumbnail.jpg";
 
 const MOCK_COURSES = [
   {
@@ -9,6 +10,7 @@ const MOCK_COURSES = [
     instructor: "আস-সুন্নাহ ফাউন্ডেশন",
     lectureCount: 27,
     slug: "quran-shikhi",
+    thumbnail: quranShikhiThumbnail,
   },
 ];
 
