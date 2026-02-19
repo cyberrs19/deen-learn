@@ -92,5 +92,14 @@ services:
       PG_META_DB_PASSWORD: ${POSTGRES_PASSWORD}
     restart: unless-stopped
 
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    depends_on:
+      - kong
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN}
+    restart: unless-stopped
+
 volumes:
   db-data:
