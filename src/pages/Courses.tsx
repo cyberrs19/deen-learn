@@ -1,22 +1,28 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CourseCard from "@/components/CourseCard";
 import { GraduationCap } from "lucide-react";
-import quranShikhiThumbnail from "@/assets/quran-shikhi-thumbnail.jpg";
-
-const COURSES = [
-  {
-    title: "সহজ সূত্রে কুরআন শিখি",
-    description: "কুরআন সহজভাবে শিখুন আস-সুন্নাহ ফাউন্ডেশনের এই কোর্সে। ২৭টি লেকচারে কুরআনের মূল বিষয়গুলো জানুন।",
-    instructor: "আস-সুন্নাহ ফাউন্ডেশন",
-    lectureCount: 27,
-    slug: "quran-shikhi",
-    thumbnail: quranShikhiThumbnail,
-  },
-];
+import { supabase } from "@/lib/supabase";
 
 const Courses = () => {
+  const [courses, setCourses] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      const { data } = await supabase
+        .from('courses')
+        .select('*')
+        .eq('is_published', true)
+        .order('created_at');
+      setCourses(data || []);
+      setLoading(false);
+    };
+    load();
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -35,11 +41,25 @@ const Courses = () => {
             <p className="mt-4 text-muted-foreground">দ্বীনের জ্ঞান অর্জন করুন গোছানো কোর্সের মাধ্যমে</p>
           </motion.div>
 
-          <div className="mx-auto grid max-w-4xl gap-6 md:grid-cols-2 lg:grid-cols-2">
-            {COURSES.map((course) => (
-              <CourseCard key={course.slug} {...course} />
-            ))}
-          </div>
+          {loading ? (
+            <p className="text-center text-muted-foreground">লোড হচ্ছে...</p>
+          ) : courses.length === 0 ? (
+            <p className="text-center text-muted-foreground">কোনো কোর্স পাওয়া যায়নি</p>
+          ) : (
+            <div className="mx-auto grid max-w-4xl gap-6 md:grid-cols-2 lg:grid-cols-2">
+              {courses.map((course) => (
+                <CourseCard
+                  key={course.id}
+                  title={course.title}
+                  description={course.description || ''}
+                  instructor={course.instructor || ''}
+                  lectureCount={0}
+                  slug={course.slug}
+                  thumbnail={course.thumbnail_url}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </main>
       <Footer />
